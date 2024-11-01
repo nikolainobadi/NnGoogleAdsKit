@@ -12,11 +12,13 @@ public struct FullScreenAdInfo<Ad: GADFullScreenPresentingAd>: Identifiable {
     public let ad: Ad
     public let id: String
     private let loadTime: Date
+    private let freshnessInterval: TimeInterval
     
-    public init(ad: Ad, id: String = UUID().uuidString, loadTime: Date = Date()) {
+    public init(ad: Ad, id: String = UUID().uuidString, loadTime: Date = Date(), freshnessInterval: TimeInterval = 4 * 3600) {
         self.ad = ad
         self.id = id
         self.loadTime = loadTime
+        self.freshnessInterval = freshnessInterval
     }
 }
 
@@ -32,8 +34,6 @@ extension FullScreenAdInfo: Equatable {
 // MARK: - Helpers
 public extension FullScreenAdInfo {
     var isExpired: Bool {
-        let freshnessInterval: TimeInterval = 4 * 3600 // 4 hours
-        
         return Date().timeIntervalSince(loadTime) > freshnessInterval
     }
     

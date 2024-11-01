@@ -29,7 +29,7 @@ struct AppOpenAdsViewModifier: ViewModifier {
 }
 
 public extension View {
-    func nnAppOpenAd(shouldShowAd: Binding<Bool>, adUnitId: String, delegate: AdDelegate? = nil) -> some View {
+    func showingAppOpenAds(shouldShowAd: Binding<Bool>, adUnitId: String, delegate: AdDelegate? = nil) -> some View {
         modifier(AppOpenAdsViewModifier(shouldShowAd: shouldShowAd, appOpenAdsENV: .init(adUnitId: adUnitId, delegate: delegate ?? AppOpenDelegateAdapter())))
     }
 }
