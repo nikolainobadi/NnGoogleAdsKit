@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "NnGoogleAdsKit",
+    platforms: [
+        .iOS(.v14)
+    ],
     products: [
         .library(
             name: "NnGoogleAdsKit",
@@ -12,11 +15,13 @@ let package = Package(
         ),
     ],
     dependencies: [
+        .package(url: "https://github.com/googleads/swift-package-manager-google-mobile-ads.git", from: "10.14.0")
     ],
     targets: [
         .target(
             name: "NnGoogleAdsKit",
             dependencies: [
+                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads")
             ]
         ),
     ]
