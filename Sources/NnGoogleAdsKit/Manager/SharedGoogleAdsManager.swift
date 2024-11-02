@@ -9,19 +9,19 @@ import Foundation
 import GoogleMobileAds
 import AppTrackingTransparency
 
-public enum SharedGoogleAdsManager {
-    public static var didSetAuthStatus: Bool {
+enum SharedGoogleAdsManager {
+    static var didSetAuthStatus: Bool {
         return appTrackingAuthStatus != .notDetermined
     }
     
-    public static var appTrackingAuthStatus: ATTrackingManager.AuthorizationStatus {
+    static var appTrackingAuthStatus: ATTrackingManager.AuthorizationStatus {
         return ATTrackingManager.trackingAuthorizationStatus
     }
 }
 
 
 // MARK: - Initialization
-public extension SharedGoogleAdsManager {
+extension SharedGoogleAdsManager {
     static func initializeMobileAds() {
         GADMobileAds.sharedInstance().start()
     }
@@ -33,7 +33,7 @@ public extension SharedGoogleAdsManager {
 
 
 // MARK: - AdLoader
-public extension SharedGoogleAdsManager {
+extension SharedGoogleAdsManager {
     static func loadAppOpenAd(unitId: String) async throws -> GADAppOpenAd {
         let adId = getAppOpenAdId(unitId: unitId)
         

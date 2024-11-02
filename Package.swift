@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "NnGoogleAdsKit",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v17)
     ],
     products: [
         .library(
