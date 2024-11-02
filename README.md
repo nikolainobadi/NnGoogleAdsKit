@@ -76,7 +76,4 @@ Text("Main View")
 Any feedback or ideas to enhance `NnGoogleAdsKit` would be well received. Please feel free to [open an issue](https://github.com/nikolainobadi/NnGoogleAdsKit/issues/new) if you'd like to help improve this swift package.
 
 ## License
-`NnGoogleAdsKit` is available under the MIT license. See [LICENSE](LICENSE) for details.
----
-
-With **NnGoogleAdsKit**, displaying app open ads in your iOS app has never been simpler.
+NnGoogleAdsKit is available under the MIT license. See [LICENSE](LICENSE) for details.
