@@ -35,7 +35,7 @@ struct AppOpenAdsViewModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .alreadyLoggedInAction(loggedInCount: $loginCount, isInitialLogin: $isInitialLogin) {
+            .alreadyLoggedInAction(isInitialLogin: $isInitialLogin) {
                 loginCount += 1
                 showAd()
             }

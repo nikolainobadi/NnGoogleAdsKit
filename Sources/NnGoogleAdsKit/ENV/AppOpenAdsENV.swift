@@ -192,4 +192,3 @@ public extension AdDelegate {
     /// - Parameter error: The error that prevented the ad from presenting.
     func adFailedToPresent(error: Error) { }
 }
-
