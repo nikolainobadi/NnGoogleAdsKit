@@ -10,7 +10,9 @@ import SwiftUI
 /// A view modifier that tracks login events and displays app open ads based on a specified threshold.
 ///
 /// This modifier observes the login count and displays app open ads once the count meets the specified threshold
-/// set in the `loginAdThreshold` environment value.
+/// set in the `loginAdThreshold` environment value. It is intended to be used on a persistent view that remains
+/// visible until the user logs out. Applying this modifier on a view that may disappear (e.g., during navigation)
+/// could reset the `isInitialLogin` state and lead to unintended behavior.
 ///
 /// - Parameters:
 ///   - loginCount: A binding to the current login count, which is incremented upon each login.
@@ -53,10 +55,15 @@ public extension View {
     /// This modifier initializes `AppOpenAdsViewModifier` with the provided ad visibility status and delegate,
     /// allowing control over ad display based on the specified login threshold.
     ///
+    /// **Important**: This modifier should only be applied to a view that will not disappear or be replaced
+    /// until the user logs out. If used on a view that may disappear (e.g., during navigation), the `isInitialLogin`
+    /// state could be reset, leading to unintended behavior with ad display logic.
+    ///
     /// - Parameters:
     ///   - loginCount: A binding to the current login count, allowing incrementing and tracking logins.
     ///   - isInitialLogin: A binding to a Boolean indicating if this is the user’s initial login.
     ///   - delegate: An object conforming to `AdDelegate` for handling ad events and configuration.
+    /// - Returns: A modified view with app open ads configured based on login count and visibility settings.
     func withAppOpenAds(loginCount: Binding<Int>, isInitialLogin: Binding<Bool>, delegate: AdDelegate) -> some View {
         modifier(AppOpenAdsViewModifier(loginCount: loginCount, isInitialLogin: isInitialLogin, adENV: .init(delegate: delegate)))
     }
