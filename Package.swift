@@ -13,6 +13,7 @@ let package = Package(
             name: "NnGoogleAdsKit",
             targets: ["NnGoogleAdsKit"]
         ),
+        
     ],
     dependencies: [
         .package(url: "https://github.com/googleads/swift-package-manager-google-mobile-ads.git", from: "10.14.0")
