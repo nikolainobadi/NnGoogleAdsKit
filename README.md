@@ -19,23 +19,37 @@ dependencies: [
 
 ## Usage
 
+**Important**: Use the `withAppOpenAds` modifier only on views that will remain visible until the user logs out. If the view disappears (e.g., due to navigation), the login state may reset, which could lead to unintended behavior with app open ad display logic.
+
 ### Adding App Open Ads to a SwiftUI View
-To display app open ads within a SwiftUI view, apply the `withAppOpenAds` modifier:
+To display app open ads within a SwiftUI view, apply the `withAppOpenAds` modifier. Here’s an example that conditionally shows either a `LoginView` or an `InAppView` based on the user’s login state:
 
 ```swift
+import SwiftUI
 import NnGoogleAdsKit
 
 struct ContentView: View {
-    @StateObject var adEventHandler = MyAdEventHandler()
+    @State private var isLoggedIn = false
+    @StateObject private var adEventHandler = MyAdEventHandler()
     @AppStorage("AppOpenAdsLoginCount") private var loginCount = 0
-    @AppStorage("IsIntialLogin") private var isInitialLogin = true
+    @AppStorage("IsInitialLogin") private var isInitialLogin = true
 
     var body: some View {
-        Text("Welcome to the App!")
-            .withAppOpenAds(loginCount: $loginCount, isInitialLogin: $isInitialLogin, delegate: adEventHandler)
+        if isLoggedIn {
+            InAppView(onLogout: { isLoggedIn = false })
+                .withAppOpenAds(loginCount: $loginCount, isInitialLogin: $isInitialLogin, delegate: adEventHandler)
+        } else {
+            LoginView(onLogin: { isLoggedIn = true })
+        }
     }
 }
+
 ```
+
+In this example:
+- `ContentView` tracks the `isLoggedIn` state to determine whether to display the `LoginView` or `InAppView`.
+- When the user logs in, `InAppView` is shown with the `withAppOpenAds` modifier applied, enabling the app open ads functionality.
+- `InAppView` remains visible as long as the user is logged in, making it an ideal place for the `withAppOpenAds` modifier to work reliably.
 
 #### Parameters
 - `loginCount`: A binding to the login count, which determines when ads should begin appearing.
@@ -47,7 +61,7 @@ struct ContentView: View {
 To modify the default login threshold, use the `loginAdThreshold(_:)` view modifier:
 
 ```swift
-Text("Main View")
+InAppView()
     .withAppOpenAds(loginCount: $loginCount, isInitialLogin: $isInitialLogin, delegate: adDelegate)
     .loginAdThreshold(5) // Require 5 logins before showing ads
 ```
@@ -94,4 +108,5 @@ Then, pass an instance of your `AdDelegate` when applying the `withAppOpenAds` m
 Your feedback and ideas to enhance `NnGoogleAdsKit` are welcome! Please [open an issue](https://github.com/nikolainobadi/NnGoogleAdsKit/issues/new) if you'd like to contribute to this Swift package.
 
 ## License
-NnGoogleAdsKit is available under the MIT license. See [LICENSE](LICENSE) for details. 
+NnGoogleAdsKit is available under the MIT license. See [LICENSE](LICENSE) for details.
+
