@@ -9,27 +9,16 @@ import SwiftUI
 
 /// A view modifier that tracks login events and displays app open ads when allowed.
 struct AppOpenAdsViewModifier: ViewModifier {
+    @Binding var isInitialLogin: Bool
     @StateObject var adENV: AppOpenAdsENV
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("AppOpenAdsLoginCount") private var loginCount = 0
 
-    /// Determines if ads can be displayed.
     let canShowAds: Bool
-
-    /// Initializes the ad view modifier.
-    /// - Parameters:
-    ///   - unitId: The ad unit ID for app open ads.
-    ///   - canShowAds: A Boolean indicating whether ads are allowed.
-    ///   - delegate: An optional delegate for ad events.
-    ///   - loginCountBeforeStartingAds: The login count threshold before ads display.
-    init(unitId: String, canShowAds: Bool, delegate: AdDelegate?, loginCountBeforeStartingAds: Int) {
-        self.canShowAds = canShowAds
-        self._adENV = .init(wrappedValue: .init(adUnitId: unitId, delegate: delegate, loginCountBeforeStartingAds: loginCountBeforeStartingAds))
-    }
 
     func body(content: Content) -> some View {
         content
-            .alreadyLoggedInAction(loggedInCount: $loginCount) {
+            .alreadyLoggedInAction(loggedInCount: $loginCount, isInitialLogin: $isInitialLogin) {
                 loginCount += 1
                 adENV.showAdIfAuthorized(loginCount: loginCount)
             }
@@ -48,7 +37,13 @@ public extension View {
     ///   - canShowAds: A Boolean indicating if ads can be shown.
     ///   - delegate: An optional delegate for ad events.
     ///   - loginCountBeforeStartingAds: The required login count before ads can display.
-    func withAppOpenAds(adUnitId: String, canShowAds: Bool, delegate: AdDelegate? = nil, loginCountBeforeStartingAds: Int = 3) -> some View {
-        modifier(AppOpenAdsViewModifier(unitId: adUnitId, canShowAds: canShowAds, delegate: delegate, loginCountBeforeStartingAds: loginCountBeforeStartingAds))
+    func withAppOpenAds(adUnitId: String, canShowAds: Bool, isInitialLogin: Binding<Bool>, delegate: AdDelegate? = nil, loginCountBeforeStartingAds: Int = 3) -> some View {
+        modifier(
+            AppOpenAdsViewModifier(
+                isInitialLogin: isInitialLogin,
+                adENV: .init(adUnitId: adUnitId, delegate: delegate, loginCountBeforeStartingAds: loginCountBeforeStartingAds),
+                canShowAds: canShowAds
+            )
+        )
     }
 }

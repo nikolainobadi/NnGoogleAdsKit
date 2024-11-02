@@ -10,7 +10,7 @@ import SwiftUI
 /// A view modifier that triggers an action based on whether the user is logging in for the first time.
 struct InitialLoginViewModifier: ViewModifier {
     @Binding var loggedInCount: Int
-    @AppStorage("IsInitialLogin") private var isInitialLogin = true
+    @Binding var isInitialLogin: Bool
 
     /// Action to perform when the user is not logging in for the first time.
     let action: () -> Void
@@ -36,7 +36,7 @@ extension View {
     /// - Parameters:
     ///   - loggedInCount: The count of login attempts.
     ///   - action: The action to trigger if the user is not logging in for the first time.
-    func alreadyLoggedInAction(loggedInCount: Binding<Int>, action: @escaping () -> Void) -> some View {
-        modifier(InitialLoginViewModifier(loggedInCount: loggedInCount, action: action))
+    func alreadyLoggedInAction(loggedInCount: Binding<Int>, isInitialLogin: Binding<Bool>, action: @escaping () -> Void) -> some View {
+        modifier(InitialLoginViewModifier(loggedInCount: loggedInCount, isInitialLogin: isInitialLogin, action: action))
     }
 }
