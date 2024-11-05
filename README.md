@@ -29,6 +29,7 @@ import SwiftUI
 import NnGoogleAdsKit
 
 struct ContentView: View {
+    @State private var userIsPro = false
     @State private var isLoggedIn = false
     @StateObject private var adEventHandler = MyAdEventHandler()
     @AppStorage("AppOpenAdsLoginCount") private var loginCount = 0
@@ -37,7 +38,7 @@ struct ContentView: View {
     var body: some View {
         if isLoggedIn {
             InAppView(onLogout: { isLoggedIn = false })
-                .withAppOpenAds(loginCount: $loginCount, isInitialLogin: $isInitialLogin, delegate: adEventHandler)
+                .withAppOpenAds(loginCount: $loginCount, isInitialLogin: $isInitialLogin, delegate: adEventHandler, canShowAds: !userIsPro)
         } else {
             LoginView(onLogin: { isLoggedIn = true })
         }
@@ -50,11 +51,13 @@ In this example:
 - `ContentView` tracks the `isLoggedIn` state to determine whether to display the `LoginView` or `InAppView`.
 - When the user logs in, `InAppView` is shown with the `withAppOpenAds` modifier applied, enabling the app open ads functionality.
 - `InAppView` remains visible as long as the user is logged in, making it an ideal place for the `withAppOpenAds` modifier to work reliably.
+- The `canShowAds` parameter is set based on the userIsPro state. If userIsPro is true, indicating a paid user, canShowAds will be false, preventing ads from displaying. Otherwise, canShowAds is set to true to allow ads for free users.
 
 #### Parameters
 - `loginCount`: A binding to the login count, which determines when ads should begin appearing.
 - `isInitialLogin`: A binding to a Boolean indicating if this is the user's initial login.
 - `delegate`: An object conforming to `AdDelegate` to handle ad-related events.
+- `canShowAds`: A Boolean that controls whether ads can be displayed.
 - `loginAdThreshold`: A customizable environment value that sets the minimum login count required before ads are displayed (default is 3).
 
 ### Setting a Custom Login Threshold
@@ -78,7 +81,6 @@ final class MyAdEventHandler: ObservableObject {
 
 extension MyAdEventHandler: AdDelegate {
     var adUnitId: String { "ca-app-pub-3940256099942544/5575463023" }
-    var canShowAds: Bool { !user.isPro }
 
     func adDidRecordClick() {
         print("Ad was clicked.")
