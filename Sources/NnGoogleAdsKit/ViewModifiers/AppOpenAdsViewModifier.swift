@@ -38,7 +38,10 @@ struct AppOpenAdsViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .alreadyLoggedInAction(isInitialLogin: $isInitialLogin) {
-                loginCount += 1
+                if loginCount <= loginAdThreshold {
+                    loginCount += 1
+                }
+                
                 showAd()
             }
             .onChange(of: scenePhase) { _, newPhase in
