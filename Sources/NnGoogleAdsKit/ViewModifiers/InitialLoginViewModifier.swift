@@ -24,10 +24,8 @@ struct InitialLoginViewModifier: ViewModifier {
         content
             .onAppear {
                 if isInitialLogin {
-                    // Mark the first login as complete without triggering the action
                     isInitialLogin = false
                 } else {
-                    // Perform the action for subsequent logins
                     action()
                 }
             }
