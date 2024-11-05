@@ -30,6 +30,10 @@ struct AppOpenAdsViewModifier: ViewModifier {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.loginAdThreshold) var loginAdThreshold
     
+    private var shouldIncrementLoginCount: Bool {
+        return !isInitialLogin && loginCount <= loginAdThreshold
+    }
+    
     /// Displays an ad if the login count meets or exceeds the login ad threshold.
     private func showAd() {
         adENV.showAdIfAuthorized(loginCount: loginCount, threshold: loginAdThreshold)
@@ -38,7 +42,7 @@ struct AppOpenAdsViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .alreadyLoggedInAction(isInitialLogin: $isInitialLogin) {
-                if loginCount <= loginAdThreshold {
+                if shouldIncrementLoginCount {
                     loginCount += 1
                 }
                 
