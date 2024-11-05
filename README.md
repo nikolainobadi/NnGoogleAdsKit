@@ -31,14 +31,13 @@ import NnGoogleAdsKit
 struct ContentView: View {
     @State private var userIsPro = false
     @State private var isLoggedIn = false
-    @StateObject private var adEventHandler = MyAdEventHandler()
     @AppStorage("AppOpenAdsLoginCount") private var loginCount = 0
     @AppStorage("IsInitialLogin") private var isInitialLogin = true
 
     var body: some View {
         if isLoggedIn {
             InAppView(onLogout: { isLoggedIn = false })
-                .withAppOpenAds(loginCount: $loginCount, isInitialLogin: $isInitialLogin, delegate: adEventHandler, canShowAds: !userIsPro)
+                .withAppOpenAds(loginCount: $loginCount, isInitialLogin: $isInitialLogin, delegate: MyAdEventHandler(), canShowAds: !userIsPro)
         } else {
             LoginView(onLogin: { isLoggedIn = true })
         }
