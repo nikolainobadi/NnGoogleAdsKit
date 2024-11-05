@@ -37,8 +37,8 @@ extension AppOpenAdsENV {
     /// - Parameters:
     ///   - loginCount: The current login count.
     ///   - threshold: The number of logins required before starting ads.
-    func showAdIfAuthorized(loginCount: Int, threshold: Int) {
-        guard delegate.canShowAds else { return }
+    func showAdIfAuthorized(loginCount: Int, threshold: Int, canShowAds: Bool) {
+        guard canShowAds else { return }
         
         if !didInitializeAds {
             SharedGoogleAdsManager.initializeMobileAds()
@@ -139,9 +139,6 @@ private extension AppOpenAdsENV {
 public protocol AdDelegate {
     /// The ad unit ID used to load and display ads.
     var adUnitId: String { get }
-    
-    /// A Boolean value indicating whether ads can currently be shown.
-    var canShowAds: Bool { get }
     
     /// Called when an ad has completely dismissed.
     ///
