@@ -37,7 +37,12 @@ struct ContentView: View {
     var body: some View {
         if isLoggedIn {
             InAppView(onLogout: { isLoggedIn = false })
-                .withAppOpenAds(loginCount: $loginCount, isInitialLogin: $isInitialLogin, delegate: MyAdEventHandler(), canShowAds: !userIsPro)
+                .withAppOpenAds(
+                    loginCount: $loginCount,
+                    isInitialLogin: $isInitialLogin,
+                    delegate: MyAdEventHandler(),
+                    canShowAds: !userIsPro
+                )
         } else {
             LoginView(onLogin: { isLoggedIn = true })
         }
