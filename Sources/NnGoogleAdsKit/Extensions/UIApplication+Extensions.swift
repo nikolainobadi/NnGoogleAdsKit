@@ -7,6 +7,7 @@
 
 import UIKit
 
+@MainActor
 internal extension UIApplication {
     /// Retrieves the topmost view controller in the current window.
     /// - Returns: The top view controller if available, otherwise `nil`.

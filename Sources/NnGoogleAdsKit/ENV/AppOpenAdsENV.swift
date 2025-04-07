@@ -9,9 +9,10 @@ import Foundation
 import GoogleMobileAds
 
 /// Manages the environment for handling app open ads, including initialization, loading, and display conditions.
+@MainActor
 final class AppOpenAdsENV: NSObject, ObservableObject {
     private let delegate: AdDelegate
-    private let adManager = SharedGoogleAdsManager.self
+    private let adManager = SharedGoogleAdsManager.shared
     
     private var isLoadingAd = false
     private var didInitializeAds = false
@@ -41,22 +42,21 @@ extension AppOpenAdsENV {
         guard canShowAds else { return }
         
         if !didInitializeAds {
-            SharedGoogleAdsManager.initializeMobileAds()
+            adManager.initializeMobileAds()
             didInitializeAds = true
         }
         
         guard loginCount > threshold else { return }
         
-        // TODO: - 
-//        Task {
-//            if SharedGoogleAdsManager.didSetAuthStatus {
-//                if let adToDisplay = await getAdToDisplay() {
-//                    await presentAd(ad: adToDisplay.ad)
-//                }
-//            } else {
-//                await SharedGoogleAdsManager.requestTrackingAuthorization()
-//            }
-//        }
+        Task {
+            if adManager.didSetAuthStatus {
+                if let adToDisplay = await getAdToDisplay() {
+                    presentAd(ad: adToDisplay.ad)
+                }
+            } else {
+                await adManager.requestTrackingAuthorization()
+            }
+        }
     }
 }
 
@@ -83,10 +83,8 @@ extension AppOpenAdsENV: FullScreenContentDelegate {
     func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         nextAd = nil
         delegate.adFailedToPresent(error: error)
-        
         Task {
-            // TODO: -
-//            nextAd = await loadNextAd()
+            nextAd = await loadNextAd()
         }
     }
 }
@@ -113,6 +111,7 @@ private extension AppOpenAdsENV {
         if let nextAd, !nextAd.isExpired {
             return nextAd
         }
+        
         return await loadNextAd()
     }
     
@@ -123,7 +122,7 @@ private extension AppOpenAdsENV {
         
         isLoadingAd = true
         
-        guard let ad = try? await adManager.loadAppOpenAd(unitId: delegate.adUnitId) else { return nil }
+        guard let ad = await adManager.loadAppOpenAd(unitId: delegate.adUnitId) else { return nil }
         
         ad.fullScreenContentDelegate = self
         isLoadingAd = false
