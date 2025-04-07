@@ -27,7 +27,7 @@ enum SharedGoogleAdsManager {
 extension SharedGoogleAdsManager {
     /// Initializes Google Mobile Ads SDK.
     static func initializeMobileAds() {
-        GADMobileAds.sharedInstance().start()
+        MobileAds.shared.start()
     }
     
     /// Requests authorization for app tracking asynchronously.
@@ -42,9 +42,10 @@ extension SharedGoogleAdsManager {
     /// Asynchronously loads an App Open Ad with a given unit ID.
     /// - Parameter unitId: The ad unit ID to load the App Open Ad.
     /// - Returns: The loaded App Open Ad if successful.
-    static func loadAppOpenAd(unitId: String) async throws -> GADAppOpenAd {
+    static func loadAppOpenAd(unitId: String) async throws -> AppOpenAd {
         let adId = getAppOpenAdId(unitId: unitId)
-        return try await GADAppOpenAd.load(withAdUnitID: adId, request: .customInit(trackingAuthStatus: appTrackingAuthStatus))
+        
+        return try await AppOpenAd.load(with: adId, request: .customInit(trackingAuthStatus: appTrackingAuthStatus))
     }
 }
 

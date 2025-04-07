@@ -15,7 +15,7 @@ final class AppOpenAdsENV: NSObject, ObservableObject {
     
     private var isLoadingAd = false
     private var didInitializeAds = false
-    private var nextAd: FullScreenAdInfo<GADAppOpenAd>?
+    private var nextAd: FullScreenAdInfo<AppOpenAd>?
     
     /// Initializes the app open ads environment.
     /// - Parameter delegate: An optional delegate for handling ad events.
@@ -47,44 +47,46 @@ extension AppOpenAdsENV {
         
         guard loginCount > threshold else { return }
         
-        Task {
-            if SharedGoogleAdsManager.didSetAuthStatus {
-                if let adToDisplay = await getAdToDisplay() {
-                    await presentAd(ad: adToDisplay.ad)
-                }
-            } else {
-                await SharedGoogleAdsManager.requestTrackingAuthorization()
-            }
-        }
+        // TODO: - 
+//        Task {
+//            if SharedGoogleAdsManager.didSetAuthStatus {
+//                if let adToDisplay = await getAdToDisplay() {
+//                    await presentAd(ad: adToDisplay.ad)
+//                }
+//            } else {
+//                await SharedGoogleAdsManager.requestTrackingAuthorization()
+//            }
+//        }
     }
 }
 
 
 // MARK: - Delegate
-extension AppOpenAdsENV: GADFullScreenContentDelegate {
-    func adDidRecordClick(_ ad: GADFullScreenPresentingAd) {
+extension AppOpenAdsENV: FullScreenContentDelegate {
+    func adDidRecordClick(_ ad: FullScreenPresentingAd) {
         delegate.adDidRecordClick()
     }
     
-    func adDidRecordImpression(_ ad: GADFullScreenPresentingAd) {
+    func adDidRecordImpression(_ ad: FullScreenPresentingAd) {
         delegate.adDidRecordImpression()
     }
     
-    func adWillDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adWillDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
         delegate.adWillDismiss()
     }
     
-    func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
         nextAd = nil
         delegate.adDidDismiss()
     }
     
-    func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+    func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         nextAd = nil
         delegate.adFailedToPresent(error: error)
         
         Task {
-            nextAd = await loadNextAd()
+            // TODO: -
+//            nextAd = await loadNextAd()
         }
     }
 }
@@ -95,9 +97,10 @@ extension AppOpenAdsENV: GADFullScreenContentDelegate {
 private extension AppOpenAdsENV {
     /// Presents the given app open ad from the root view controller.
     /// - Parameter ad: The app open ad to present.
-    func presentAd(ad: GADAppOpenAd) {
-        guard let rootVC = UIApplication.shared.getTopViewController() else { return }
-        ad.present(fromRootViewController: rootVC)
+    func presentAd(ad: AppOpenAd) {
+        if let rootVC = UIApplication.shared.getTopViewController() {
+            ad.present(from: rootVC)
+        }
     }
 }
 
@@ -106,7 +109,7 @@ private extension AppOpenAdsENV {
 private extension AppOpenAdsENV {
     /// Retrieves an ad to display if available and not expired, otherwise loads a new ad.
     /// - Returns: A valid, non-expired ad if available, otherwise loads a new ad asynchronously.
-    func getAdToDisplay() async -> FullScreenAdInfo<GADAppOpenAd>? {
+    func getAdToDisplay() async -> FullScreenAdInfo<AppOpenAd>? {
         if let nextAd, !nextAd.isExpired {
             return nextAd
         }
@@ -115,7 +118,7 @@ private extension AppOpenAdsENV {
     
     /// Loads the next ad asynchronously.
     /// - Returns: The next ad if successfully loaded, otherwise `nil`.
-    func loadNextAd() async -> FullScreenAdInfo<GADAppOpenAd>? {
+    func loadNextAd() async -> FullScreenAdInfo<AppOpenAd>? {
         if isLoadingAd { return nil }
         
         isLoadingAd = true
