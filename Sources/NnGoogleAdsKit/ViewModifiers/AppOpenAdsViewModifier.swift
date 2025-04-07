@@ -32,7 +32,6 @@ struct AppOpenAdsViewModifier: ViewModifier {
     
     let canShowAds: Bool
     
-    /// Displays an ad if the login count meets or exceeds the login ad threshold.
     private func showAd() {
         adENV.showAdIfAuthorized(loginCount: loginCount, threshold: loginAdThreshold, canShowAds: canShowAds)
     }

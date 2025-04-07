@@ -78,7 +78,6 @@ private extension SharedGoogleAdsManager {
 /// and doesn't declare thread-safety. By marking it manually, we're taking responsibility
 /// for ensuring it's only accessed safely—specifically, from the main actor.
 extension AppOpenAd: @unchecked @retroactive Sendable {
-    
     /// Loads an `AppOpenAd` instance and guarantees that the returned value is isolated to the main actor.
     ///
     /// Google’s `load(with:request:)` method may complete on a background thread, and `AppOpenAd` itself

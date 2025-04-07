@@ -17,7 +17,6 @@ import SwiftUI
 struct InitialLoginViewModifier: ViewModifier {
     @Binding var isInitialLogin: Bool
 
-    /// Action to perform when the user is not logging in for the first time.
     let action: () -> Void
 
     func body(content: Content) -> some View {
@@ -30,7 +29,6 @@ struct InitialLoginViewModifier: ViewModifier {
                 }
             }
             .onDisappear {
-                // Reset the login state on view disappearance
                 isInitialLogin = true
             }
     }
