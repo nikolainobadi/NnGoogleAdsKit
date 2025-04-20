@@ -86,8 +86,8 @@ extension AppOpenAdsENV: FullScreenContentDelegate {
     func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         nextAd = nil
         delegate.adFailedToPresent(error: error)
-        Task {
-            nextAd = await loadNextAd()
+        Task { [weak self] in
+            self?.nextAd = await self?.loadNextAd()
         }
     }
 }
