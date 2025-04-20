@@ -1,7 +1,16 @@
 
 # NnGoogleAdsKit
 
+![Swift Version](https://badgen.net/badge/swift/6.0%2B/purple)
+![Platform](https://img.shields.io/badge/iOS-17%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+
 `NnGoogleAdsKit` is a streamlined Swift package designed to integrate Google Mobile Ads into iOS applications with minimal setup. It enables developers to display app open ads in SwiftUI views effortlessly, with customizable thresholds and event handling.
+
+## Why Use NnGoogleAdsKit?
+
+Integrating Google App Open Ads with SwiftUI can be tedious and error-prone. `NnGoogleAdsKit` abstracts the setup into clean, testable, and customizable components, letting you focus on your app, not ad management.
+
 
 ## Features
 
@@ -29,8 +38,8 @@ import SwiftUI
 import NnGoogleAdsKit
 
 struct ContentView: View {
-    @State private var userIsPro = false
     @State private var isLoggedIn = false
+    @State private var user = User(isPro: false)
     @AppStorage("AppOpenAdsLoginCount") private var loginCount = 0
     @AppStorage("IsInitialLogin") private var isInitialLogin = true
 
@@ -41,7 +50,7 @@ struct ContentView: View {
                     loginCount: $loginCount,
                     isInitialLogin: $isInitialLogin,
                     delegate: MyAdEventHandler(),
-                    canShowAds: !userIsPro
+                    canShowAds: !user.isPro
                 )
         } else {
             LoginView(onLogin: { isLoggedIn = true })
@@ -55,7 +64,7 @@ In this example:
 - `ContentView` tracks the `isLoggedIn` state to determine whether to display the `LoginView` or `InAppView`.
 - When the user logs in, `InAppView` is shown with the `withAppOpenAds` modifier applied, enabling the app open ads functionality.
 - `InAppView` remains visible as long as the user is logged in, making it an ideal place for the `withAppOpenAds` modifier to work reliably.
-- The `canShowAds` parameter is set based on the userIsPro state. If userIsPro is true, indicating a paid user, canShowAds will be false, preventing ads from displaying. Otherwise, canShowAds is set to true to allow ads for free users.
+- The `canShowAds` parameter is set based on whether the user is pro. Ads will only shown to non-pro users.
 
 #### Parameters
 - `loginCount`: A binding to the login count, which determines when ads should begin appearing.
@@ -109,6 +118,14 @@ extension MyAdEventHandler: AdDelegate {
 ```
 
 Then, pass an instance of your `AdDelegate` when applying the `withAppOpenAds` modifier.
+
+## Dependencies
+
+`NnGoogleAdsKit` depends on the following external libraries:
+
+- [GoogleMobileAds](https://developers.google.com/admob/ios/quick-start) (Google Mobile Ads SDK for iOS)
+- [NnTestKit](https://github.com/nikolainobadi/NnTestKit) (for internal testing utilities)
+
 
 ## Contributing
 Your feedback and ideas to enhance `NnGoogleAdsKit` are welcome! Please [open an issue](https://github.com/nikolainobadi/NnGoogleAdsKit/issues) if you'd like to contribute to this Swift package.
