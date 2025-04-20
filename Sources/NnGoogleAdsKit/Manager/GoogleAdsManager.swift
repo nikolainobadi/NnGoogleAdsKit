@@ -1,5 +1,5 @@
 //
-//  SharedGoogleAdsManager.swift
+//  GoogleAdsManager.swift
 //
 //
 //  Created by Nikolai Nobadi on 10/31/24.
@@ -10,54 +10,33 @@ import GoogleMobileAds
 import AppTrackingTransparency
 
 /// Manages shared configurations and utilities for Google Mobile Ads.
-@MainActor
-final class SharedGoogleAdsManager {
-    static let shared = SharedGoogleAdsManager()
-    
-    /// Checks if the app tracking authorization status has been determined.
+final class GoogleAdsManager: AdService {
     var didSetAuthStatus: Bool {
         return appTrackingAuthStatus != .notDetermined
     }
     
-    /// Retrieves the current authorization status for app tracking.
-    var appTrackingAuthStatus: ATTrackingManager.AuthorizationStatus {
-        return ATTrackingManager.trackingAuthorizationStatus
-    }
-    
-    private init() { }
-}
-
-
-// MARK: - Initialization
-extension SharedGoogleAdsManager {
-    /// Initializes Google Mobile Ads SDK.
     func initializeMobileAds() {
         MobileAds.shared.start()
     }
     
-    /// Requests authorization for app tracking asynchronously.
     func requestTrackingAuthorization() async {
         await ATTrackingManager.requestTrackingAuthorization()
     }
-}
-
-
-// MARK: - AdLoader
-extension SharedGoogleAdsManager {
-    /// Asynchronously loads an App Open Ad with a given unit ID.
-    /// - Parameter unitId: The ad unit ID to load the App Open Ad.
-    /// - Returns: The loaded App Open Ad if successful.
+    
     func loadAppOpenAd(unitId: String) async -> AppOpenAd? {
         let adId = getAppOpenAdId(unitId: unitId)
         
-        // use 'safe' method to ensure ad is loaded on main thread regardless of where it was originally loaded
         return await AppOpenAd.loadAdOnMainThread(with: adId, request: .customInit(trackingAuthStatus: appTrackingAuthStatus))
     }
 }
 
 
-// MARK: - Private Methods
-private extension SharedGoogleAdsManager {
+// MARK: - Private Helpers
+private extension GoogleAdsManager {
+    var appTrackingAuthStatus: ATTrackingManager.AuthorizationStatus {
+        return ATTrackingManager.trackingAuthorizationStatus
+    }
+    
     /// Retrieves the correct App Open Ad ID based on the build configuration.
     /// - Parameter unitId: The ad unit ID provided.
     /// - Returns: The ad ID to use for loading, typically a test ID for debug builds.

@@ -12,18 +12,19 @@ import GoogleMobileAds
 @MainActor
 final class AppOpenAdsENV: NSObject, ObservableObject {
     private let delegate: AdDelegate
-    private let adManager = SharedGoogleAdsManager.shared
+    private let adManager: AdService
     
-    private var isLoadingAd = false
-    private var didInitializeAds = false
-    private var nextAd: FullScreenAdInfo<AppOpenAd>?
+    private(set) var isLoadingAd = false
+    private(set) var didInitializeAds = false
+    private(set) var nextAd: FullScreenAdInfo<AppOpenAd>?
     
     /// Initializes the app open ads environment.
     /// - Parameter delegate: An optional delegate for handling ad events.
     ///
     /// The delegate provides necessary configuration such as the ad unit ID and ad visibility authorization.
-    init(delegate: AdDelegate) {
+    init(delegate: AdDelegate, adManager: AdService) {
         self.delegate = delegate
+        self.adManager = adManager
     }
 }
 
@@ -38,24 +39,26 @@ extension AppOpenAdsENV {
     /// - Parameters:
     ///   - loginCount: The current login count.
     ///   - threshold: The number of logins required before starting ads.
-    func showAdIfAuthorized(loginCount: Int, threshold: Int, canShowAds: Bool) {
-        guard canShowAds else { return }
+    func showAdIfAuthorized(loginCount: Int, threshold: Int, canShowAds: Bool) async {
+        guard canShowAds else {
+            return
+        }
         
         if !didInitializeAds {
             adManager.initializeMobileAds()
             didInitializeAds = true
         }
         
-        guard loginCount > threshold else { return }
+        guard loginCount > threshold else {
+            return
+        }
         
-        Task {
-            if adManager.didSetAuthStatus {
-                if let adToDisplay = await getAdToDisplay() {
-                    presentAd(ad: adToDisplay.ad)
-                }
-            } else {
-                await adManager.requestTrackingAuthorization()
+        if adManager.didSetAuthStatus {
+            if let adToDisplay = await getAdToDisplay() {
+                presentAd(ad: adToDisplay.ad)
             }
+        } else {
+            await adManager.requestTrackingAuthorization()
         }
     }
 }
@@ -133,6 +136,14 @@ private extension AppOpenAdsENV {
 
 
 // MARK: - Dependencies
+protocol AdService: Sendable {
+    var didSetAuthStatus: Bool { get }
+    
+    func initializeMobileAds()
+    func requestTrackingAuthorization() async
+    func loadAppOpenAd(unitId: String) async -> AppOpenAd?
+}
+
 /// A protocol that defines the requirements for handling ad-related events in an app.
 ///
 /// Conforming to this protocol allows an object to respond to various ad lifecycle events,

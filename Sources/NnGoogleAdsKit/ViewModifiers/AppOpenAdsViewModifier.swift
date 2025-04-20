@@ -30,8 +30,8 @@ struct AppOpenAdsViewModifier: ViewModifier {
 
     let canShowAds: Bool
 
-    private func showAd() {
-        adENV.showAdIfAuthorized(loginCount: loginCount, threshold: loginAdThreshold, canShowAds: canShowAds)
+    private func showAd() async {
+        await adENV.showAdIfAuthorized(loginCount: loginCount, threshold: loginAdThreshold, canShowAds: canShowAds)
     }
 
     func body(content: Content) -> some View {
@@ -40,11 +40,14 @@ struct AppOpenAdsViewModifier: ViewModifier {
                 if loginCount <= loginAdThreshold {
                     loginCount += 1
                 }
-                showAd()
+                
+                await showAd()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
-                    showAd()
+                    Task {
+                        await showAd()
+                    }
                 }
             }
     }
@@ -86,6 +89,13 @@ public extension View {
     /// }
     /// ```
     func withAppOpenAds(loginCount: Binding<Int>, isInitialLogin: Binding<Bool>, delegate: AdDelegate, canShowAds: Bool) -> some View {
-        modifier(AppOpenAdsViewModifier(loginCount: loginCount, isInitialLogin: isInitialLogin, adENV: .init(delegate: delegate), canShowAds: canShowAds))
+        modifier(
+            AppOpenAdsViewModifier(
+                loginCount: loginCount,
+                isInitialLogin: isInitialLogin,
+                adENV: .init(delegate: delegate, adManager: GoogleAdsManager()),
+                canShowAds: canShowAds
+            )
+        )
     }
 }

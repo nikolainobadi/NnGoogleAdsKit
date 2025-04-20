@@ -17,15 +17,15 @@ import SwiftUI
 /// When the view disappears, `isInitialLogin` is reset to `true` to prepare for the next login cycle.
 struct PostInitialLoginActionViewModifier: ViewModifier {
     @Binding var isInitialLogin: Bool
-    let action: () -> Void
+    let action: () async -> Void
 
     func body(content: Content) -> some View {
         content
-            .onAppear {
+            .task {
                 if isInitialLogin {
                     isInitialLogin = false
                 } else {
-                    action()
+                    await action()
                 }
             }
             .onDisappear {
@@ -62,7 +62,7 @@ extension View {
     ///     }
     /// }
     /// ```
-    func performAfterFirstLogin(isInitialLogin: Binding<Bool>, action: @escaping () -> Void) -> some View {
+    func performAfterFirstLogin(isInitialLogin: Binding<Bool>, action: @escaping () async -> Void) -> some View {
         modifier(PostInitialLoginActionViewModifier(isInitialLogin: isInitialLogin, action: action))
     }
 }
