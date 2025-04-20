@@ -25,9 +25,12 @@ extension ATTrackingManager.AuthorizationStatus {
     /// Maps the authorization status to a corresponding ad request agent identifier.
     var gadRequestAgent: String {
         switch self {
-        case .authorized: return "Ads/GMA_IDFA"
-        case .denied, .restricted: return "Ads/GMA"
-        default: return ""
+        case .authorized: 
+            return "Ads/GMA_IDFA"
+        case .denied, .restricted: 
+            return "Ads/GMA"
+        default: 
+            return ""
         }
     }
 }
