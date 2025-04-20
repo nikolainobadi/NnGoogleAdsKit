@@ -126,6 +126,9 @@ Then, pass an instance of your `AdDelegate` when applying the `withAppOpenAds` m
 - [GoogleMobileAds](https://developers.google.com/admob/ios/quick-start) (Google Mobile Ads SDK for iOS)
 - [NnTestKit](https://github.com/nikolainobadi/NnTestKit) (for internal testing utilities)
 
+> NnGoogleAdsKit was built against:
+> - Google Mobile Ads SDK version 12.0.0 or later
+> - NnTestKit version 1.0.0 or later
 
 ## Contributing
 Your feedback and ideas to enhance `NnGoogleAdsKit` are welcome! Please [open an issue](https://github.com/nikolainobadi/NnGoogleAdsKit/issues) if you'd like to contribute to this Swift package.
