@@ -22,7 +22,7 @@ Integrating Google App Open Ads with SwiftUI can be tedious and error-prone. `Nn
 Add `NnGoogleAdsKit` to your dependencies:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/nikolainobadi/NnGoogleAdsKit.git", from: "0.6.0")
+    .package(url: "https://github.com/nikolainobadi/NnGoogleAdsKit.git", from: "0.7.0")
 ]
 ```
 
