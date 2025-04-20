@@ -111,7 +111,7 @@ extension MyAdEventHandler: AdDelegate {
 Then, pass an instance of your `AdDelegate` when applying the `withAppOpenAds` modifier.
 
 ## Contributing
-Your feedback and ideas to enhance `NnGoogleAdsKit` are welcome! Please [open an issue](https://github.com/nikolainobadi/NnGoogleAdsKit/issues/new) if you'd like to contribute to this Swift package.
+Your feedback and ideas to enhance `NnGoogleAdsKit` are welcome! Please [open an issue](https://github.com/nikolainobadi/NnGoogleAdsKit/issues) if you'd like to contribute to this Swift package.
 
 ## License
 NnGoogleAdsKit is available under the MIT license. See [LICENSE](LICENSE) for details.
