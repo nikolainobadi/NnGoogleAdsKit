@@ -1,6 +1,7 @@
 
 # NnGoogleAdsKit
 
+![Unit Tests](https://github.com/nikolainobadi/NnGoogleAdsKit/actions/workflows/ci.yml/badge.svg)
 ![Swift Version](https://badgen.net/badge/swift/6.0%2B/purple)
 ![Platform](https://img.shields.io/badge/iOS-17%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
