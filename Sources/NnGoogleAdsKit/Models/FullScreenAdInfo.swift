@@ -9,7 +9,7 @@ import Foundation
 import GoogleMobileAds
 
 /// A structure representing information about a full-screen ad, including its identifier, load time, and freshness interval.
-struct FullScreenAdInfo<Ad: GADFullScreenPresentingAd>: Identifiable {
+struct FullScreenAdInfo<Ad: FullScreenPresentingAd>: Identifiable {
     /// The full-screen ad instance.
     let ad: Ad
     
@@ -50,28 +50,5 @@ extension FullScreenAdInfo {
     /// Checks whether the ad has expired based on the freshness interval.
     var isExpired: Bool {
         return Date().timeIntervalSince(loadTime) > freshnessInterval
-    }
-    
-    /// Presents the ad if a top view controller is available, falling back to a failure callback if it cannot.
-    /// - Parameter failure: An optional closure to call if the ad cannot be presented.
-    func showAd(failure: (() -> Void)? = nil) {
-        guard var topController = UIApplication.shared.getTopViewController() else {
-            failure?()
-            return
-        }
-        
-        // Traverse the view controller stack to the topmost view controller.
-        while let presentedViewController = topController.presentedViewController {
-            topController = presentedViewController
-        }
-        
-        // Present the appropriate ad type based on the ad instance.
-        if let interstitialAd = ad as? GADInterstitialAd {
-            interstitialAd.present(fromRootViewController: topController)
-        } else if let appOpenAd = ad as? GADAppOpenAd {
-            appOpenAd.present(fromRootViewController: topController)
-        } else {
-            failure?()
-        }
     }
 }
