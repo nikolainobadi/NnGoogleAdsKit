@@ -11,8 +11,9 @@ import GoogleMobileAds
 import NnSwiftTestingHelpers
 @testable import NnGoogleAdsKit
 
+@LeakTracked
 @MainActor
-final class AppOpenAdsENVTests: TrackingMemoryLeaks {
+final class AppOpenAdsENVTests {
     @Test("Starting values empty")
     func emptyStartingValues() {
         let (sut, delegate, manager) = makeSUT()
