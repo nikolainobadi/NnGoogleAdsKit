@@ -13,7 +13,10 @@ let package = Package(
             name: "NnGoogleAdsKit",
             targets: ["NnGoogleAdsKit"]
         ),
-        
+        .library(
+            name: "NnGoogleAdsUITestHelpers",
+            targets: ["NnGoogleAdsUITestHelpers"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/nikolainobadi/NnTestKit.git", from: "2.0.0"),
@@ -24,6 +27,12 @@ let package = Package(
             name: "NnGoogleAdsKit",
             dependencies: [
                 .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads")
+            ]
+        ),
+        .target(
+            name: "NnGoogleAdsUITestHelpers",
+            linkerSettings: [
+                .linkedFramework("XCTest")
             ]
         ),
         .testTarget(
