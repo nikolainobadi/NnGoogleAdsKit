@@ -11,8 +11,8 @@ import GoogleMobileAds
 import NnSwiftTestingHelpers
 @testable import NnGoogleAdsKit
 
-@LeakTracked
 @MainActor
+@LeakTracked
 final class AppOpenAdsENVTests {
     @Test("Starting values empty")
     func emptyStartingValues() {

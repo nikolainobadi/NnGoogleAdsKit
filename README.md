@@ -20,11 +20,20 @@ Integrating Google App Open Ads with SwiftUI can be tedious and error-prone. `Nn
 - **Delegate Support**: Optional `AdDelegate` for handling ad events like impressions, clicks, dismissals, and errors.
 
 ## Installation
-Add `NnGoogleAdsKit` to your dependencies:
+Add `NnGoogleAdsKit` to your package dependencies:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/nikolainobadi/NnGoogleAdsKit.git", from: "0.7.0")
+    .package(url: "https://github.com/nikolainobadi/NnGoogleAdsKit.git", from: "0.8.0")
 ]
+```
+
+Then add the libraries you need to the relevant targets:
+```swift
+// For your main app target
+.product(name: "NnGoogleAdsKit", package: "NnGoogleAdsKit")
+
+// For your UI test target
+.product(name: "NnGoogleAdsUITestHelpers", package: "NnGoogleAdsKit")
 ```
 
 ## Usage
@@ -120,6 +129,27 @@ extension MyAdEventHandler: AdDelegate {
 
 Then, pass an instance of your `AdDelegate` when applying the `withAppOpenAds` modifier.
 
+## UI Test Helpers
+
+`NnGoogleAdsUITestHelpers` provides a convenience method for handling the App Tracking Transparency alert in UI tests.
+
+```swift
+import NnGoogleAdsUITestHelpers
+
+let app = XCUIApplication()
+app.launch()
+
+// Deny tracking and proceed past the ad screen
+app.handleAdTrackingAlert(.denyTracking)
+
+// Allow tracking with custom timeouts
+app.handleAdTrackingAlert(.allowTracking, alertTimeout: 5, continueTimeout: 15)
+```
+
+The `TrackingAlertResponse` enum supports two cases:
+- `.denyTracking` — taps "Ask App Not to Track"
+- `.allowTracking` — taps "Allow"
+
 ## Dependencies
 
 `NnGoogleAdsKit` depends on the following external libraries:
@@ -129,7 +159,7 @@ Then, pass an instance of your `AdDelegate` when applying the `withAppOpenAds` m
 
 > NnGoogleAdsKit was built against:
 > - Google Mobile Ads SDK version 12.0.0 or later
-> - NnTestKit version 1.0.0 or later
+> - NnTestKit version 2.0.0 or later
 
 ## Contributing
 Your feedback and ideas to enhance `NnGoogleAdsKit` are welcome! Please [open an issue](https://github.com/nikolainobadi/NnGoogleAdsKit/issues) if you'd like to contribute to this Swift package.
