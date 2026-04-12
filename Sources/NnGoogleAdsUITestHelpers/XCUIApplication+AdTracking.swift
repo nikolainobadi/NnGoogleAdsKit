@@ -22,15 +22,17 @@ extension XCUIApplication {
     /// - Parameters:
     ///   - response: The tracking alert action to take — either ``TrackingAlertResponse/denyTracking`` or ``TrackingAlertResponse/allowTracking``.
     ///   - continueButtonID: The accessibility identifier of the button that appears after the ad loads. Defaults to `"Continue to app"`.
-    ///   - timeout: Maximum time in seconds to wait for the alert and continue button to appear. Defaults to `3`.
+    ///   - alertTimeout: Maximum time in seconds to wait for the tracking alert to appear. Defaults to `3`.
+    ///   - continueTimeout: Maximum time in seconds to wait for the continue button to appear after dismissing the alert. Defaults to `10`.
     public func handleAdTrackingAlert(
         _ response: TrackingAlertResponse,
         continueButtonID: String = "Continue to app",
-        timeout: TimeInterval = 3
+        alertTimeout: TimeInterval = 3,
+        continueTimeout: TimeInterval = 10
     ) {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
         let alert = springboard.alerts.firstMatch
-        if alert.waitForExistence(timeout: timeout) {
+        if alert.waitForExistence(timeout: alertTimeout) {
             let buttonLabel: String = switch response {
             case .denyTracking: "Ask App Not to Track"
             case .allowTracking: "Allow"
@@ -39,7 +41,7 @@ extension XCUIApplication {
         }
 
         let continueButton = staticTexts[continueButtonID]
-        XCTAssertTrue(continueButton.waitForExistence(timeout: timeout), "Continue button not found")
+        XCTAssertTrue(continueButton.waitForExistence(timeout: continueTimeout), "Continue button not found")
         continueButton.tap()
     }
 }
