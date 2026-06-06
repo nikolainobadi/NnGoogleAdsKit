@@ -13,18 +13,23 @@ import GoogleMobileAds
 final class AppOpenAdsENV: NSObject, ObservableObject {
     private let delegate: AdDelegate
     private let adManager: AdService
-    
+    private let debugEnabled: Bool
+
     private(set) var isLoadingAd = false
     private(set) var didInitializeAds = false
     private(set) var nextAd: FullScreenAdInfo<AppOpenAd>?
-    
+
     /// Initializes the app open ads environment.
-    /// - Parameter delegate: An optional delegate for handling ad events.
+    /// - Parameters:
+    ///   - delegate: An optional delegate for handling ad events.
+    ///   - adManager: The service responsible for SDK initialization, tracking authorization, and ad loading.
+    ///   - debugEnabled: When `true`, prints ad lifecycle details to the console. Nothing is printed when `false` (default).
     ///
     /// The delegate provides necessary configuration such as the ad unit ID and ad visibility authorization.
-    init(delegate: AdDelegate, adManager: AdService) {
+    init(delegate: AdDelegate, adManager: AdService, debugEnabled: Bool = false) {
         self.delegate = delegate
         self.adManager = adManager
+        self.debugEnabled = debugEnabled
     }
 }
 
@@ -41,23 +46,27 @@ extension AppOpenAdsENV {
     ///   - threshold: The number of logins required before starting ads.
     func showAdIfAuthorized(loginCount: Int, threshold: Int, canShowAds: Bool) async {
         guard canShowAds else {
+            log("Ads are disabled for this session (canShowAds is false), skipping ad flow")
             return
         }
-        
+
         if !didInitializeAds {
+            log("Initializing Mobile Ads SDK")
             adManager.initializeMobileAds()
             didInitializeAds = true
         }
-        
+
         guard loginCount > threshold else {
+            log("Login count (\(loginCount)) has not exceeded threshold (\(threshold)), skipping ad display")
             return
         }
-        
+
         if adManager.didSetAuthStatus {
             if let adToDisplay = await getAdToDisplay() {
                 presentAd(ad: adToDisplay.ad)
             }
         } else {
+            log("Tracking authorization status not determined, requesting authorization")
             await adManager.requestTrackingAuthorization()
         }
     }
@@ -79,11 +88,13 @@ extension AppOpenAdsENV: FullScreenContentDelegate {
     }
     
     func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
+        log("Ad dismissed, clearing cached ad")
         nextAd = nil
         delegate.adDidDismiss()
     }
-    
+
     func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        log("Ad failed to present: \(error.localizedDescription)")
         nextAd = nil
         delegate.adFailedToPresent(error: error)
         Task { [weak self] in
@@ -100,7 +111,10 @@ private extension AppOpenAdsENV {
     /// - Parameter ad: The app open ad to present.
     func presentAd(ad: AppOpenAd) {
         if let rootVC = UIApplication.shared.getTopViewController() {
+            log("Presenting ad from top view controller")
             ad.present(from: rootVC)
+        } else {
+            log("Could not find a top view controller to present the ad")
         }
     }
 }
@@ -112,25 +126,41 @@ private extension AppOpenAdsENV {
     /// - Returns: A valid, non-expired ad if available, otherwise loads a new ad asynchronously.
     func getAdToDisplay() async -> FullScreenAdInfo<AppOpenAd>? {
         if let nextAd, !nextAd.isExpired {
+            log("Reusing cached ad that is still fresh")
             return nextAd
         }
-        
+
         return await loadNextAd()
     }
-    
+
     /// Loads the next ad asynchronously.
     /// - Returns: The next ad if successfully loaded, otherwise `nil`.
     func loadNextAd() async -> FullScreenAdInfo<AppOpenAd>? {
-        if isLoadingAd { return nil }
-        
+        if isLoadingAd {
+            log("Ad load already in progress, skipping duplicate load")
+            return nil
+        }
+
         isLoadingAd = true
-        
-        guard let ad = await adManager.loadAppOpenAd(unitId: delegate.adUnitId) else { return nil }
-        
+        log("Loading next app open ad")
+
+        guard let ad = await adManager.loadAppOpenAd(unitId: delegate.adUnitId) else {
+            log("Failed to load app open ad")
+            return nil
+        }
+
+        log("App open ad loaded successfully")
         ad.fullScreenContentDelegate = self
         isLoadingAd = false
-        
+
         return .init(ad: ad)
+    }
+
+    /// Prints a message to the console when debug logging is enabled.
+    ///
+    /// - Parameter message: The message to print.
+    func log(_ message: String) {
+        AdsKitLogger.log(message, isEnabled: debugEnabled)
     }
 }
 

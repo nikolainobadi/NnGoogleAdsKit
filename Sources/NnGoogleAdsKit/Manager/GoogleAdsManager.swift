@@ -11,21 +11,35 @@ import AppTrackingTransparency
 
 /// Manages shared configurations and utilities for Google Mobile Ads.
 final class GoogleAdsManager: AdService {
+    private let debugEnabled: Bool
+
     var didSetAuthStatus: Bool {
         return appTrackingAuthStatus != .notDetermined
     }
-    
+
+    /// Creates a new instance of `GoogleAdsManager`.
+    ///
+    /// - Parameter debugEnabled: When `true`, prints ad loading details to the console. Nothing is printed when `false` (default).
+    init(debugEnabled: Bool = false) {
+        self.debugEnabled = debugEnabled
+    }
+
     func initializeMobileAds() {
+        log("Starting Mobile Ads SDK")
         MobileAds.shared.start()
     }
-    
+
     func requestTrackingAuthorization() async {
+        log("Requesting tracking authorization")
         await ATTrackingManager.requestTrackingAuthorization()
+        log("Tracking authorization status: \(appTrackingAuthStatus.rawValue)")
     }
-    
+
     func loadAppOpenAd(unitId: String) async -> AppOpenAd? {
         let adId = getAppOpenAdId(unitId: unitId)
-        
+
+        log("Loading app open ad with unit id: \(adId)")
+
         return await AppOpenAd.loadAdOnMainThread(with: adId, request: .customInit(trackingAuthStatus: appTrackingAuthStatus))
     }
 }
@@ -46,6 +60,13 @@ private extension GoogleAdsManager {
         #else
         return unitId // Production ID for release builds.
         #endif
+    }
+
+    /// Prints a message to the console when debug logging is enabled.
+    ///
+    /// - Parameter message: The message to print.
+    func log(_ message: String) {
+        AdsKitLogger.log(message, isEnabled: debugEnabled)
     }
 }
 
