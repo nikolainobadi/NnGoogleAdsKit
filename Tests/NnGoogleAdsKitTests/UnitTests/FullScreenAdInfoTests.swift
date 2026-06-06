@@ -12,41 +12,37 @@ import GoogleMobileAds
 
 struct FullScreenAdInfoTests {
     private let oldDate = Date.from(year: 2020, month: 1, day: 1)
-    private let futureDate = Date.from(year: 2099, month: 1, day: 1)
-}
 
-
-// MARK: - Unit Tests
-extension FullScreenAdInfoTests {
-    @Test("Defaults set correctly on init")
-    func defaultsAreCorrect() {
+    @Test
+    func `Defaults set correctly on init`() {
         let sut = makeSUT()
-        
+
         #expect(sut.freshnessInterval == 4 * 3600)
         #expect(abs(sut.loadTime.timeIntervalSinceNow) < 1)
         #expect(!sut.isExpired)
     }
 
-    @Test("Custom parameters set correctly on init")
-    func customInitSetsParameters() {
-        let sut = makeSUT(loadTime: oldDate, freshnessInterval: 100)
-        
+    @Test
+    func `Custom parameters set correctly on init`() {
+        let interval: TimeInterval = 100
+        let sut = makeSUT(loadTime: oldDate, freshnessInterval: interval)
+
         #expect(sut.loadTime == oldDate)
-        #expect(sut.freshnessInterval == 100)
+        #expect(sut.freshnessInterval == interval)
     }
 
-    @Test("isExpired returns false when ad is fresh")
-    func isExpiredIsFalseWhenFresh() {
+    @Test
+    func `Ad is not expired when fresh`() {
         #expect(!makeSUT(loadTime: Date()).isExpired)
     }
 
-    @Test("isExpired returns true when ad is expired")
-    func isExpiredIsTrueWhenExpired() {
+    @Test
+    func `Ad is expired when freshness interval has elapsed`() {
         #expect(makeSUT(loadTime: oldDate, freshnessInterval: 3600).isExpired)
     }
 
-    @Test("Equatable returns true when ids match")
-    func equatableReturnsTrueWhenIDsMatch() {
+    @Test
+    func `Ads with matching ids are equal`() {
         let id = UUID().uuidString
         let sut1 = makeSUT(id: id)
         let sut2 = makeSUT(id: id)
@@ -54,8 +50,8 @@ extension FullScreenAdInfoTests {
         #expect(sut1 == sut2)
     }
 
-    @Test("Equatable returns false when ids differ")
-    func equatableReturnsFalseWhenIDsDiffer() {
+    @Test
+    func `Ads with different ids are not equal`() {
         #expect(makeSUT() != makeSUT())
     }
 }
@@ -77,7 +73,7 @@ private extension FullScreenAdInfoTests {
 
 
 // MARK: - Helpers
-extension Date {
+private extension Date {
     static func from(year: Int, month: Int, day: Int) -> Date {
         var components = DateComponents()
         components.year = year

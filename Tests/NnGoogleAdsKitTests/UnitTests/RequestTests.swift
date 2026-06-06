@@ -11,27 +11,22 @@ import AppTrackingTransparency
 @testable import NnGoogleAdsKit
 
 struct RequestTests {
-    @Test("customInit sets agent for authorized status")
-    func setsAgentForAuthorized() {
-        let request = Request.customInit(trackingAuthStatus: .authorized)
-        #expect(request.requestAgent == "Ads/GMA_IDFA")
+    @Test(arguments: [
+        (ATTrackingManager.AuthorizationStatus.authorized, "Ads/GMA_IDFA"),
+        (.denied, "Ads/GMA"),
+        (.restricted, "Ads/GMA"),
+        (.notDetermined, "")
+    ])
+    func `Request agent matches tracking authorization status`(status: ATTrackingManager.AuthorizationStatus, expectedAgent: String) {
+        let request = makeSUT(trackingAuthStatus: status)
+        #expect(request.requestAgent == expectedAgent)
     }
-    
-    @Test("customInit sets agent for denied status")
-    func setsAgentForDenied() {
-        let request = Request.customInit(trackingAuthStatus: .denied)
-        #expect(request.requestAgent == "Ads/GMA")
-    }
-    
-    @Test("customInit sets agent for restricted status")
-    func setsAgentForRestricted() {
-        let request = Request.customInit(trackingAuthStatus: .restricted)
-        #expect(request.requestAgent == "Ads/GMA")
-    }
-    
-    @Test("customInit sets agent for not determined status")
-    func setsAgentForNotDetermined() {
-        let request = Request.customInit(trackingAuthStatus: .notDetermined)
-        #expect(request.requestAgent == "")
+}
+
+
+// MARK: - SUT
+private extension RequestTests {
+    func makeSUT(trackingAuthStatus: ATTrackingManager.AuthorizationStatus = .notDetermined) -> Request {
+        return Request.customInit(trackingAuthStatus: trackingAuthStatus)
     }
 }
