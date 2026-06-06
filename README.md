@@ -18,6 +18,7 @@ Integrating Google App Open Ads with SwiftUI can be tedious and error-prone. `Nn
 - Simplified setup for displaying app open ads within SwiftUI views.
 - **Customizable Login Threshold**: Control when ads start appearing by specifying a minimum login count.
 - **Delegate Support**: Optional `AdDelegate` for handling ad events like impressions, clicks, dismissals, and errors.
+- **Opt-in Debug Logging**: Troubleshoot ad display behavior with detailed console output.
 
 ## Installation
 Add `NnGoogleAdsKit` to your package dependencies:
@@ -81,6 +82,7 @@ In this example:
 - `isInitialLogin`: A binding to a Boolean indicating if this is the user's initial login.
 - `delegate`: An object conforming to `AdDelegate` to handle ad-related events.
 - `canShowAds`: A Boolean that controls whether ads can be displayed.
+- `debugEnabled`: A Boolean that enables console logging of ad lifecycle details (default is `false`).
 - `loginAdThreshold`: A customizable environment value that sets the minimum login count required before ads are displayed (default is 3).
 
 ### Setting a Custom Login Threshold
@@ -128,6 +130,22 @@ extension MyAdEventHandler: AdDelegate {
 ```
 
 Then, pass an instance of your `AdDelegate` when applying the `withAppOpenAds` modifier.
+
+### Debug Logging
+Ad display is completely silent by default — nothing is printed to the console. Pass `debugEnabled: true` to print detailed ad lifecycle information, useful for troubleshooting why an ad is (or isn't) appearing.
+
+```swift
+InAppView()
+    .withAppOpenAds(
+        loginCount: $loginCount,
+        isInitialLogin: $isInitialLogin,
+        delegate: MyAdEventHandler(),
+        canShowAds: !user.isPro,
+        debugEnabled: true
+    )
+```
+
+Messages are prefixed with `[NnGoogleAdsKit]` and cover the full ad flow: SDK initialization, login threshold checks, tracking authorization, ad loading, presentation, and dismissal. Failure paths are logged as well (failed ad loads, missing view controller for presentation). Ad events are always delivered to your `AdDelegate` regardless of the debug setting.
 
 ## UI Test Helpers
 

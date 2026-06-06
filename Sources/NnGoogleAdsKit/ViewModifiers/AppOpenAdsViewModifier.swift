@@ -67,6 +67,7 @@ public extension View {
     ///   - isInitialLogin: A binding indicating whether the current session is the initial login.
     ///   - delegate: An object conforming to `AdDelegate` that manages ad display behavior.
     ///   - canShowAds: A Boolean flag indicating whether ads should be allowed for the current session.
+    ///   - debugEnabled: When `true`, prints ad lifecycle details to the console. Nothing is printed when `false` (default).
     ///
     /// ### Example
     /// ```swift
@@ -88,12 +89,12 @@ public extension View {
     ///     }
     /// }
     /// ```
-    func withAppOpenAds(loginCount: Binding<Int>, isInitialLogin: Binding<Bool>, delegate: AdDelegate, canShowAds: Bool) -> some View {
+    func withAppOpenAds(loginCount: Binding<Int>, isInitialLogin: Binding<Bool>, delegate: AdDelegate, canShowAds: Bool, debugEnabled: Bool = false) -> some View {
         modifier(
             AppOpenAdsViewModifier(
                 loginCount: loginCount,
                 isInitialLogin: isInitialLogin,
-                adENV: .init(delegate: delegate, adManager: GoogleAdsManager()),
+                adENV: .init(delegate: delegate, adManager: GoogleAdsManager(debugEnabled: debugEnabled), debugEnabled: debugEnabled),
                 canShowAds: canShowAds
             )
         )
