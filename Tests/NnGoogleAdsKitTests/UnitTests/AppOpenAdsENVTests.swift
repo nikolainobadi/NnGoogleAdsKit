@@ -6,7 +6,6 @@
 //
 
 import Testing
-import Foundation
 import GoogleMobileAds
 import NnSwiftTestingHelpers
 @testable import NnGoogleAdsKit
@@ -14,8 +13,8 @@ import NnSwiftTestingHelpers
 @MainActor
 @LeakTracked
 final class AppOpenAdsENVTests {
-    @Test("Starting values empty")
-    func emptyStartingValues() {
+    @Test
+    func `Starting values empty`() {
         let (sut, delegate, manager) = makeSUT()
         
         #expect(!sut.isLoadingAd)
@@ -24,22 +23,22 @@ final class AppOpenAdsENVTests {
         #expect(!manager.didInitializeAds)
         #expect(manager.unitIdToLoad == nil)
         #expect(!manager.didRequestTrackingAuth)
-        #expect(delegate.recordedEvents.isEmpty)
+        #expect(delegate.recordedEvent == nil)
     }
     
-    @Test("Does nothing if ads cannot be shown")
-    func doesNothingIfCannotShowAds() async {
+    @Test
+    func `Does nothing if ads cannot be shown`() async {
         let (sut, delegate, manager) = makeSUT()
         
         await sut.showAdIfAuthorized(loginCount: 5, threshold: 3, canShowAds: false)
         
         #expect(!manager.didInitializeAds)
         #expect(manager.unitIdToLoad == nil)
-        #expect(delegate.recordedEvents.isEmpty)
+        #expect(delegate.recordedEvent == nil)
     }
     
-    @Test("Initializes Mobile Ads if not initialized")
-    func initializesMobileAdsOnFirstAttempt() async {
+    @Test
+    func `Initializes Mobile Ads if not initialized`() async {
         let (sut, _, manager) = makeSUT()
         
         await sut.showAdIfAuthorized(loginCount: 2, threshold: 3, canShowAds: true)
@@ -47,8 +46,8 @@ final class AppOpenAdsENVTests {
         #expect(manager.didInitializeAds)
     }
     
-    @Test("Requests tracking authorization if auth status not set")
-    func requestsTrackingAuthorizationIfNeeded() async {
+    @Test
+    func `Requests tracking authorization if auth status not set`() async {
         let (sut, _, manager) = makeSUT(didSetAuthStatus: false)
         
         await sut.showAdIfAuthorized(loginCount: 5, threshold: 3, canShowAds: true)
@@ -56,21 +55,22 @@ final class AppOpenAdsENVTests {
         #expect(manager.didRequestTrackingAuth)
     }
     
-    @Test("Loads and presents ad if authorized and login count exceeds threshold")
-    func loadsAndPresentsAdWhenEligible() async {
-        let (sut, delegate, manager) = makeSUT(didSetAuthStatus: true, adToLoad: MockAppOpenAd())
-        
+    @Test
+    func `Loads and presents ad if authorized and login count exceeds threshold`() async throws {
+        let (sut, delegate, manager) = makeSUT(didSetAuthStatus: true, loadsAd: true)
+
         await sut.showAdIfAuthorized(loginCount: 5, threshold: 3, canShowAds: true)
-        
-        #expect(manager.unitIdToLoad == delegate.adUnitId)
+
+        let unitIdToLoad = try #require(manager.unitIdToLoad)
+        #expect(unitIdToLoad == delegate.adUnitId)
     }
 }
 
 // MARK: - SUT
 private extension AppOpenAdsENVTests {
-    func makeSUT(adUnitId: String = "myAddUnitId", didSetAuthStatus: Bool = false, adToLoad: AppOpenAd? = nil, fileID: String = #fileID, filePath: String = #filePath, line: Int = #line, column: Int = #column) -> (sut: AppOpenAdsENV, delegate: MockDelegate, manager: MockManager) {
+    func makeSUT(adUnitId: String = "myAddUnitId", didSetAuthStatus: Bool = false, loadsAd: Bool = false, fileID: String = #fileID, filePath: String = #filePath, line: Int = #line, column: Int = #column) -> (sut: AppOpenAdsENV, delegate: MockDelegate, manager: MockManager) {
         let delegate = MockDelegate(adUnitId: adUnitId)
-        let manager = MockManager(adToLoad: adToLoad, didSetAuthStatus: didSetAuthStatus)
+        let manager = MockManager(adToLoad: loadsAd ? MockAppOpenAd() : nil, didSetAuthStatus: didSetAuthStatus)
         let sut = AppOpenAdsENV(delegate: delegate, adManager: manager)
         
         trackForMemoryLeaks(sut, fileID: fileID, filePath: filePath, line: line, column: column)
@@ -112,30 +112,30 @@ private extension AppOpenAdsENVTests {
     
     final class MockDelegate: AdDelegate {
         let adUnitId: String
-        private(set) var recordedEvents: [String] = []
-        
+        private(set) var recordedEvent: String?
+
         init(adUnitId: String) {
             self.adUnitId = adUnitId
         }
-        
+
         func adDidDismiss() {
-            recordedEvents.append("adDidDismiss")
+            recordedEvent = "adDidDismiss"
         }
-        
+
         func adWillDismiss() {
-            recordedEvents.append("adWillDismiss")
+            recordedEvent = "adWillDismiss"
         }
-        
+
         func adDidRecordClick() {
-            recordedEvents.append("adDidRecordClick")
+            recordedEvent = "adDidRecordClick"
         }
-        
+
         func adDidRecordImpression() {
-            recordedEvents.append("adDidRecordImpression")
+            recordedEvent = "adDidRecordImpression"
         }
-        
+
         func adFailedToPresent(error: Error) {
-            recordedEvents.append("adFailedToPresent")
+            recordedEvent = "adFailedToPresent"
         }
     }
     
