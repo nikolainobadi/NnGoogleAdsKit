@@ -1,0 +1,16 @@
+{
+  "targets" : [
+    {
+      "buildAndTestCommands" : [
+        "xcodebuild build-for-testing -scheme NnGoogleAdsKit-Package -destination 'platform=iOS Simulator,name=iPhone 17' -skipMacroValidation",
+        "xcodebuild test-without-building -scheme NnGoogleAdsKit-Package -destination 'platform=iOS Simulator,name=iPhone 17' -skipMacroValidation"
+      ],
+      "name" : "NnGoogleAdsKit",
+      "path" : ".",
+      "skills" : [
+        "Skills/NnGoogleAdsKit"
+      ],
+      "targetType" : "library"
+    }
+  ]
+}
