@@ -1,10 +1,3 @@
-//
-//  LoginAdThresholdKey.swift
-//
-//
-//  Created by Nikolai Nobadi on 11/2/24.
-//
-
 import SwiftUI
 
 /// Defines a custom environment key for controlling the login count threshold required to display ads.

@@ -1,10 +1,3 @@
-//
-//  AppOpenAdsViewModifier.swift
-//
-//
-//  Created by Nikolai Nobadi on 10/31/24.
-//
-
 import SwiftUI
 
 /// A view modifier that manages App Open Ad display based on login events and app activity.

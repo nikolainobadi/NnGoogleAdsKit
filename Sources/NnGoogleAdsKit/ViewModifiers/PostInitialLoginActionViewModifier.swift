@@ -1,10 +1,3 @@
-//
-//  PostInitialLoginActionViewModifier.swift
-//
-//
-//  Created by Nikolai Nobadi on 11/1/24.
-//
-
 import SwiftUI
 
 /// A view modifier that distinguishes between a user's initial and subsequent logins,

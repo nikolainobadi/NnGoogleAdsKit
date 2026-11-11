@@ -1,10 +1,3 @@
-//
-//  FullScreenAdInfoTests.swift
-//  NnGoogleAdsKit
-//
-//  Created by Nikolai Nobadi on 4/20/25.
-//
-
 import Testing
 import Foundation
 import GoogleMobileAds
