@@ -1,10 +1,3 @@
-//
-//  FullScreenAdInfo.swift
-//  
-//
-//  Created by Nikolai Nobadi on 10/31/24.
-//
-
 import Foundation
 import GoogleMobileAds
 

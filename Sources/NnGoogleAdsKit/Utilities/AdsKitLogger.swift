@@ -1,10 +1,3 @@
-//
-//  AdsKitLogger.swift
-//  NnGoogleAdsKit
-//
-//  Created by Nikolai Nobadi on 6/6/26.
-//
-
 /// Internal helper for printing debug messages to the console.
 enum AdsKitLogger {
     /// Prints a message to the console when debug logging is enabled.
