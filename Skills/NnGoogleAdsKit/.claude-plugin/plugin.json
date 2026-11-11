@@ -1,4 +1,5 @@
 {
+  "version": "0.9.1",
   "name": "NnGoogleAdsKit",
   "description": "NnGoogleAdsKit Swift API reference for Google App Open Ads integration in SwiftUI.",
   "author": {
